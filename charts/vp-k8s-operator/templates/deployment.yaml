@@ -24,6 +24,8 @@ spec:
       {{- end }}
     {{- end }}
     spec:
+      serviceAccountName: {{ include "vp-k8s-operator.serviceAccountName" . }}
+      automountServiceAccountToken: true
       containers:
           {{- if .Values.rbacProxy.enabled }}
         - name: kube-rbac-proxy
