@@ -9,6 +9,15 @@ rbacProxy:
   imagePullPolicy: IfNotPresent
   port: 8443
 
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
 # Metrics
 metricsHost: 127.0.0.1
 metricsPort: 8080
@@ -46,5 +55,19 @@ resources:
     cpu: 100m
     memory: 20Mi
 
+# Liveness Probe (metrics endpoint can be used for that)
+livenessProbe: {}
+# livenessProbe:
+#   httpGet:
+#     path: /metrics
+#     port: 8080
+#   failureThreshold: 3
+#   successThreshold: 1
+#   initialDelaySeconds: 30
+#   periodSeconds: 10
+
 # Extra arguments to pass to the manager
 # extraArgs: []
+
+# Annotations to be added to pods
+podAnnotations: {}
