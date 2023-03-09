@@ -62,6 +62,10 @@ type VpArtifact struct {
 	FlinkImageRepository string `json:"flinkImageRepository,omitempty"`
 	// +optional
 	FlinkImageTag string `json:"flinkImageTag,omitempty"`
+	// +optional
+	AdditionalDependencies []string `json:"additionalDependencies,omitempty"`
+	// +optional
+	SqlScript string `json:"sqlScript,omitempty"`
 }
 
 // VpResourceSpec represents the resource requirements for components like the job and task managers
