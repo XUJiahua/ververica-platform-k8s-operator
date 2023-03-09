@@ -1,6 +1,6 @@
 # \EventResourceApi
 
-All URIs are relative to *https://localhost:8081*
+All URIs are relative to *https://localhost:64757*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
@@ -27,6 +27,7 @@ Name | Type | Description  | Notes
 
  **deploymentId** | [**optional.Interface of string**](.md)| deploymentId | 
  **jobId** | [**optional.Interface of string**](.md)| jobId | 
+ **sessionClusterId** | [**optional.Interface of string**](.md)| sessionClusterId | 
 
 ### Return type
 
@@ -34,7 +35,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[apiKey](../README.md#apiKey)
 
 ### HTTP request headers
 

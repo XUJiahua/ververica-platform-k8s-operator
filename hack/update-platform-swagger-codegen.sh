@@ -31,7 +31,7 @@ mkdir -p "${PROJECT_DIR}"/${OUT_DIR}
 docker run --rm \
     -v "${PROJECT_DIR}":/local:rw \
     --user "$(id -u)":"$(id -g)" \
-    swaggerapi/swagger-codegen-cli generate \
+    swaggerapi/swagger-codegen-cli:2.4.12 generate \
     -i /local/${SWAGGER_FILE} \
     -l go \
     -o /local/${OUT_DIR} \

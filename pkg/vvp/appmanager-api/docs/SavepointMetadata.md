@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **DeploymentId** | **string** |  | [optional] [default to null]
 **JobId** | **string** |  | [optional] [default to null]
 **Origin** | **string** |  | [optional] [default to null]
+**Type_** | **string** |  | [optional] [default to null]
 **Annotations** | **map[string]string** |  | [optional] [default to null]
 **ResourceVersion** | **int32** |  | [optional] [default to null]
 
