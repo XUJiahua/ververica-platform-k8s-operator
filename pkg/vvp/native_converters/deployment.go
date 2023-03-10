@@ -29,13 +29,15 @@ func DeploymentFromNative(vpDeployment v1beta2.VpDeployment) (appmanagerapi.Depl
 	if annotations.Has(vpDeployment.Annotations, annotations.DeploymentTargetID) {
 		deploymentSpec.DeploymentTargetId = annotations.Get(vpDeployment.Annotations, annotations.DeploymentTargetID)
 	}
+	// fixme: will it work?
+	deploymentSpec.DeploymentTargetName = vpDeployment.Spec.DeploymentTargetName
 	deployment.Spec = &deploymentSpec
 
 	if deployment.Status, err = DeploymentStatusFromNative(vpDeployment.Status); err != nil {
 		return deployment, err
 	}
 
-	if len(vpDeployment.Status.State) > 0 {
+	if vpDeployment.Status != nil && len(vpDeployment.Status.State) > 0 {
 		// we've got some state
 		state, err := DeploymentStateFromNative(vpDeployment.Status.State)
 		if err != nil {
