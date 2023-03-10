@@ -1,10 +1,9 @@
-
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.2.4
+    controller-gen.kubebuilder.io/version: v0.11.3
   creationTimestamp: null
   name: vpdeploymenttargets.ververicaplatform.fintechstudios.com
 spec:
@@ -16,15 +15,14 @@ spec:
     singular: vpdeploymenttarget
   scope: Namespaced
   versions:
-  - name: v1beta1
-    subresources: {}
-    additionalPrinterColumns:
+  - additionalPrinterColumns:
     - jsonPath: .spec.metadata.namespace
       name: Namespace
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    name: v1beta1
     schema:
       openAPIV3Schema:
         description: VpDeploymentTarget is the Schema for the vpdeploymenttargets
@@ -95,15 +93,15 @@ spec:
         type: object
     served: true
     storage: true
-  - name: v1beta2
     subresources: {}
-    additionalPrinterColumns:
+  - additionalPrinterColumns:
     - jsonPath: .spec.metadata.namespace
       name: Namespace
       type: string
     - jsonPath: .metadata.creationTimestamp
       name: Age
       type: date
+    name: v1beta2
     schema:
       openAPIV3Schema:
         description: VpDeploymentTarget is the Schema for the vpdeploymenttargets
@@ -157,9 +155,4 @@ spec:
         type: object
     served: true
     storage: false
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
+    subresources: {}
