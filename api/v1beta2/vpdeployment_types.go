@@ -49,6 +49,7 @@ type VpDeploymentTemplateMetadata struct {
 type VpArtifact struct {
 	Kind string `json:"kind"`
 
+	// +optional
 	JarURI string `json:"jarUri"`
 	// +optional
 	MainArgs string `json:"mainArgs,omitempty"`
