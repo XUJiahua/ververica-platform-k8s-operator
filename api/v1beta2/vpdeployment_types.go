@@ -81,7 +81,11 @@ type VpResourceSpec struct {
 // VpLogging configures various loggers
 type VpLogging struct {
 	// +optional
+	LoggingProfile string `json:"loggingProfile,omitempty"`
+	// +optional
 	Log4jLoggers map[string]string `json:"log4jLoggers,omitempty"`
+	// +optional
+	Log4j2ConfigurationTemplate string `json:"log4j2ConfigurationTemplate,omitempty"`
 }
 
 // VpVolumeAndMount is a wrapper around both core.Volume and core.VolumeMount
@@ -135,7 +139,20 @@ type VpPodSpec struct {
 
 // VpKubernetesOptions allows users to configure K8s pods for Deployments
 type VpKubernetesOptions struct {
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// +optional
 	Pods *VpPodSpec `json:"pods,omitempty"`
+	// +optional
+	JobManagerPodTemplate *VpV1PodTemplateSpec `json:"jobManagerPodTemplate,omitempty"`
+	// +optional
+	TaskManagerPodTemplate *VpV1PodTemplateSpec `json:"taskManagerPodTemplate,omitempty"`
+}
+
+// PodTemplateSpec describes the data a pod should have when created from a template
+type VpV1PodTemplateSpec struct {
+	Metadata *metav1.ObjectMeta `json:"metadata,omitempty"`
+	Spec     *core.PodSpec      `json:"spec,omitempty"`
 }
 
 // VpDeploymentTemplateSpec is the base spec for Deployment jobs
