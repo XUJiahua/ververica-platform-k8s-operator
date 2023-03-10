@@ -30,8 +30,7 @@ ifeq (, $(shell which controller-gen))
 	set -e ;\
 	CONTROLLER_GEN_TMP_DIR=$$(mktemp -d) ;\
 	cd $$CONTROLLER_GEN_TMP_DIR ;\
-	go mod init tmp ;\
-	go get sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.3 ;\
+	go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.3 ;\
 	rm -rf $$CONTROLLER_GEN_TMP_DIR ;\
 	}
 CONTROLLER_GEN=$(GOBIN)/controller-gen
@@ -47,8 +46,7 @@ ifeq (, $(shell which kustomize))
 	set -e ;\
 	KUSTOMIZE_TMP_DIR=$$(mktemp -d) ;\
 	cd $$KUSTOMIZE_TMP_DIR ;\
-	go mod init tmp ;\
-	go get sigs.k8s.io/kustomize/kustomize/v3@v3.3.0 ;\
+	go install sigs.k8s.io/kustomize/kustomize/v3@v3.3.0 ;\
 	rm -rf $$KUSTOMIZE_TMP_DIR ;\
 	}
 KUSTOMIZE=$(GOBIN)/kustomize
@@ -64,8 +62,7 @@ ifeq (, $(shell which kind))
 	set -e ;\
 	KIND_TMP_DIR=$$(mktemp -d) ;\
 	cd $$KIND_TMP_DIR ;\
-	go mod init tmp ;\
-	go get sigs.k8s.io/kind@v0.7.0 ;\
+	go install sigs.k8s.io/kind@v0.7.0 ;\
 	rm -rf $$KIND_TMP_DIR ;\
 	}
 KIND=$(GOBIN)/kind
@@ -81,8 +78,7 @@ ifeq (, $(shell which mockery))
 	set -e ;\
 	MOCKERY_TMP_DIR=$$(mktemp -d) ;\
 	cd $$MOCKERY_TMP_DIR ;\
-	go mod init tmp ;\
-	go get github.com/vektra/mockery/.../ ;\
+	go install github.com/vektra/mockery/.../ ;\
 	rm -rf $$MOCKERY_TMP_DIR ;\
 	}
 MOCKERY=$(GOBIN)/mockery
