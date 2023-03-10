@@ -43,7 +43,7 @@ vvpEdition: enterprise
 
 # Image for the deployment
 imageRepository: johnxu1989/ververica-platform-k8s-operator
-imageTag: v0.9.1
+imageTag: v0.9.2
 imagePullPolicy: IfNotPresent
 
 # Resources for the deployment
