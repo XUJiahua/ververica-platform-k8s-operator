@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-VERSION?=v0.8.1
+VERSION?=v0.9.0
 IMG?=fintechstudios/ververica-platform-k8s-operator
 PKG=github.com/fintechstudios.com/ververica-platform-k8s-operator
 VERSION_PKG=main
@@ -7,7 +7,7 @@ BUILD=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS?="crd"
 
-DOCKER_REPO=fintechstudios/ververica-platform-k8s-operator
+DOCKER_REPO=johnxu1989/ververica-platform-k8s-operator
 
 LD_FLAGS="-X $(VERSION_PKG).operatorVersion='$(VERSION)' -X $(VERSION_PKG).gitCommit='$(GIT_COMMIT)' -X $(VERSION_PKG).buildDate='$(BUILD)'"
 
@@ -178,6 +178,10 @@ docker-build: docker-build-image
 		-f Dockerfile \
 		--tag $(DOCKER_REPO):$(VERSION) \
 		.
+
+docker-push:docker-build
+	docker push $(DOCKER_REPO):$(VERSION)
+
 
 .PHONY: test-cluster-load-image
 test-cluster-load-image: kind
