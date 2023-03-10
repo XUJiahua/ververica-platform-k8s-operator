@@ -1,5 +1,5 @@
 # A development environment in an image to run tests on, build, etc.
-FROM golang:1.17-stretch
+FROM golang:1.19
 
 ENV CGO_ENABLED 0
 ENV GOOS linux
