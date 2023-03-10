@@ -2,39 +2,40 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: vpdeploymenttargets.ververicaplatform.fintechstudios.com
-  creationTimestamp: null
   annotations:
     cert-manager.io/inject-ca-from: {{ template "vp-k8s-operator-crds.webhookCert" . }}
-    controller-gen.kubebuilder.io/version: v0.2.4
+    certmanager.k8s.io/inject-ca-from: {{ template "vp-k8s-operator-crds.webhookCert" . }}
+    controller-gen.kubebuilder.io/version: v0.11.3
 spec:
-  preserveUnknownFields: false
   conversion:
     strategy: Webhook
     webhook:
-      conversionReviewVersions: ["v1", "v1beta1"]
       clientConfig:
         caBundle: {{ include "vp-k8s-operator-crds.webhookCaBundle" . }}
         service:
           name: {{ .Values.webhookService.name }}
           namespace: {{ default .Release.Namespace .Values.webhookService.namespace }}
           path: /convert
+      conversionReviewVersions:
+        - v1
+        - v1beta1
   group: ververicaplatform.fintechstudios.com
   names:
     kind: VpDeploymentTarget
     listKind: VpDeploymentTargetList
     plural: vpdeploymenttargets
     singular: vpdeploymenttarget
+  preserveUnknownFields: false
   scope: Namespaced
   versions:
-    - name: v1beta1
-      subresources: {}
-      additionalPrinterColumns:
+    - additionalPrinterColumns:
         - jsonPath: .spec.metadata.namespace
           name: Namespace
           type: string
         - jsonPath: .metadata.creationTimestamp
           name: Age
           type: date
+      name: v1beta1
       schema:
         openAPIV3Schema:
           description: VpDeploymentTarget is the Schema for the vpdeploymenttargets
@@ -85,9 +86,6 @@ spec:
                           path:
                             type: string
                           value:
-                            description: "TODO: support any type of JSON as an interface
-                            \t\t https://github.com/kubernetes-sigs/kubebuilder/issues/528
-                            \      https://github.com/kubernetes-sigs/controller-tools/issues/294"
                             type: string
                         required:
                           - op
@@ -108,15 +106,15 @@ spec:
           type: object
       served: true
       storage: true
-    - name: v1beta2
       subresources: {}
-      additionalPrinterColumns:
+    - additionalPrinterColumns:
         - jsonPath: .spec.metadata.namespace
           name: Namespace
           type: string
         - jsonPath: .metadata.creationTimestamp
           name: Age
           type: date
+      name: v1beta2
       schema:
         openAPIV3Schema:
           description: VpDeploymentTarget is the Schema for the vpdeploymenttargets
@@ -170,9 +168,4 @@ spec:
           type: object
       served: true
       storage: false
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
+      subresources: {}

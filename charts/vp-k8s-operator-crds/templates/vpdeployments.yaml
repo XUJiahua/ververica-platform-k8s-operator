@@ -2,34 +2,33 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: vpdeployments.ververicaplatform.fintechstudios.com
-  creationTimestamp: null
   annotations:
     cert-manager.io/inject-ca-from: {{ template "vp-k8s-operator-crds.webhookCert" . }}
-    controller-gen.kubebuilder.io/version: v0.2.4
+    certmanager.k8s.io/inject-ca-from: {{ template "vp-k8s-operator-crds.webhookCert" . }}
+    controller-gen.kubebuilder.io/version: v0.11.3
 spec:
-  preserveUnknownFields: false
   conversion:
     strategy: Webhook
     webhook:
-      conversionReviewVersions: ["v1", "v1beta1"]
       clientConfig:
         caBundle: {{ include "vp-k8s-operator-crds.webhookCaBundle" . }}
         service:
           name: {{ .Values.webhookService.name }}
           namespace: {{ default .Release.Namespace .Values.webhookService.namespace }}
           path: /convert
+      conversionReviewVersions:
+        - v1
+        - v1beta1
   group: ververicaplatform.fintechstudios.com
   names:
     kind: VpDeployment
     listKind: VpDeploymentList
     plural: vpdeployments
     singular: vpdeployment
+  preserveUnknownFields: false
   scope: Namespaced
   versions:
-    - name: v1beta1
-      subresources:
-        status: {}
-      additionalPrinterColumns:
+    - additionalPrinterColumns:
         - jsonPath: .metadata.creationTimestamp
           name: Age
           type: date
@@ -48,6 +47,7 @@ spec:
         - jsonPath: .spec.spec.template.spec.artifact.flinkImageRepository
           name: Flink-Image-Repository
           type: string
+      name: v1beta1
       schema:
         openAPIV3Schema:
           description: VpDeployment is the Schema for the vpdeployments API
@@ -159,7 +159,6 @@ spec:
                                 mainArgs:
                                   type: string
                               required:
-                                - jarUri
                                 - kind
                               type: object
                             flinkConfiguration:
@@ -1052,10 +1051,14 @@ spec:
                                                     vars'
                                                     type: string
                                                   divisor:
+                                                    anyOf:
+                                                      - type: integer
+                                                      - type: string
                                                     description: Specifies the output
                                                       format of the exposed resources,
                                                       defaults to "1"
-                                                    type: string
+                                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                    x-kubernetes-int-or-string: true
                                                   resource:
                                                     description: 'Required: resource
                                                     to select'
@@ -1140,6 +1143,18 @@ spec:
                                           of any volume."
                                           format: int64
                                           type: integer
+                                        fsGroupChangePolicy:
+                                          description: 'fsGroupChangePolicy defines
+                                          behavior of changing ownership and permission
+                                          of the volume before being exposed inside
+                                          Pod. This field will only apply to volume
+                                          types which support fsGroup based ownership(and
+                                          permissions). It will have no effect on
+                                          ephemeral volume types such as: secret,
+                                          configmaps and emptydir. Valid values are
+                                          "OnRootMismatch" and "Always". If not specified
+                                          defaults to "Always".'
+                                          type: string
                                         runAsGroup:
                                           description: The GID to run the entrypoint
                                             of the container process. Uses runtime default
@@ -1242,16 +1257,12 @@ spec:
                                                 the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa)
                                                 inlines the contents of the GMSA credential
                                                 spec named by the GMSACredentialSpecName
-                                                field. This field is alpha-level and
-                                                is only honored by servers that enable
-                                                the WindowsGMSA feature flag.
+                                                field.
                                               type: string
                                             gmsaCredentialSpecName:
                                               description: GMSACredentialSpecName is
                                                 the name of the GMSA credential spec
-                                                to use. This field is alpha-level and
-                                                is only honored by servers that enable
-                                                the WindowsGMSA feature flag.
+                                                to use.
                                               type: string
                                             runAsUserName:
                                               description: The UserName in Windows to
@@ -1261,9 +1272,7 @@ spec:
                                                 also be set in PodSecurityContext. If
                                                 set in both SecurityContext and PodSecurityContext,
                                                 the value specified in SecurityContext
-                                                takes precedence. This field is beta-level
-                                                and may be disabled with the WindowsRunAsUserName
-                                                feature flag.
+                                                takes precedence.
                                               type: string
                                           type: object
                                       type: object
@@ -1753,11 +1762,15 @@ spec:
                                                               optional for env vars'
                                                               type: string
                                                             divisor:
+                                                              anyOf:
+                                                                - type: integer
+                                                                - type: string
                                                               description: Specifies
                                                                 the output format of
                                                                 the exposed resources,
                                                                 defaults to "1"
-                                                              type: string
+                                                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                              x-kubernetes-int-or-string: true
                                                             resource:
                                                               description: 'Required:
                                                               resource to select'
@@ -1784,6 +1797,9 @@ spec:
                                                     or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir'
                                                     type: string
                                                   sizeLimit:
+                                                    anyOf:
+                                                      - type: integer
+                                                      - type: string
                                                     description: 'Total amount of local
                                                     storage required for this EmptyDir
                                                     volume. The size limit is also
@@ -1796,7 +1812,8 @@ spec:
                                                     default is nil which means that
                                                     the limit is undefined. More info:
                                                     http://kubernetes.io/docs/user-guide/volumes#emptydir'
-                                                    type: string
+                                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                    x-kubernetes-int-or-string: true
                                                 type: object
                                               fc:
                                                 description: FC represents a Fibre Channel
@@ -2430,6 +2447,9 @@ spec:
                                                                         env vars'
                                                                         type: string
                                                                       divisor:
+                                                                        anyOf:
+                                                                          - type: integer
+                                                                          - type: string
                                                                         description: Specifies
                                                                           the output
                                                                           format of
@@ -2437,7 +2457,8 @@ spec:
                                                                           resources,
                                                                           defaults to
                                                                           "1"
-                                                                        type: string
+                                                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                                        x-kubernetes-int-or-string: true
                                                                       resource:
                                                                         description: 'Required:
                                                                         resource to
@@ -3016,7 +3037,11 @@ spec:
                                   managers
                                 properties:
                                   cpu:
-                                    type: string
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
                                   memory:
                                     type: string
                                 type: object
@@ -3063,10 +3088,9 @@ spec:
           type: object
       served: true
       storage: true
-    - name: v1beta2
       subresources:
         status: {}
-      additionalPrinterColumns:
+    - additionalPrinterColumns:
         - jsonPath: .metadata.creationTimestamp
           name: Age
           type: date
@@ -3085,6 +3109,7 @@ spec:
         - jsonPath: .spec.spec.template.spec.artifact.flinkImageRepository
           name: Flink-Image-Repository
           type: string
+      name: v1beta2
       schema:
         openAPIV3Schema:
           description: VpDeployment is the Schema for the vpdeployments API
@@ -3173,6 +3198,10 @@ spec:
                               description: VpArtifact describes a jar to run along with
                                 the Flink requirements
                               properties:
+                                additionalDependencies:
+                                  items:
+                                    type: string
+                                  type: array
                                 entryClass:
                                   type: string
                                 flinkImageRegistry:
@@ -3189,8 +3218,9 @@ spec:
                                   type: string
                                 mainArgs:
                                   type: string
+                                sqlScript:
+                                  type: string
                               required:
-                                - jarUri
                                 - kind
                               type: object
                             flinkConfiguration:
@@ -4083,10 +4113,14 @@ spec:
                                                     vars'
                                                     type: string
                                                   divisor:
+                                                    anyOf:
+                                                      - type: integer
+                                                      - type: string
                                                     description: Specifies the output
                                                       format of the exposed resources,
                                                       defaults to "1"
-                                                    type: string
+                                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                    x-kubernetes-int-or-string: true
                                                   resource:
                                                     description: 'Required: resource
                                                     to select'
@@ -4175,6 +4209,18 @@ spec:
                                           of any volume."
                                           format: int64
                                           type: integer
+                                        fsGroupChangePolicy:
+                                          description: 'fsGroupChangePolicy defines
+                                          behavior of changing ownership and permission
+                                          of the volume before being exposed inside
+                                          Pod. This field will only apply to volume
+                                          types which support fsGroup based ownership(and
+                                          permissions). It will have no effect on
+                                          ephemeral volume types such as: secret,
+                                          configmaps and emptydir. Valid values are
+                                          "OnRootMismatch" and "Always". If not specified
+                                          defaults to "Always".'
+                                          type: string
                                         runAsGroup:
                                           description: The GID to run the entrypoint
                                             of the container process. Uses runtime default
@@ -4277,16 +4323,12 @@ spec:
                                                 the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa)
                                                 inlines the contents of the GMSA credential
                                                 spec named by the GMSACredentialSpecName
-                                                field. This field is alpha-level and
-                                                is only honored by servers that enable
-                                                the WindowsGMSA feature flag.
+                                                field.
                                               type: string
                                             gmsaCredentialSpecName:
                                               description: GMSACredentialSpecName is
                                                 the name of the GMSA credential spec
-                                                to use. This field is alpha-level and
-                                                is only honored by servers that enable
-                                                the WindowsGMSA feature flag.
+                                                to use.
                                               type: string
                                             runAsUserName:
                                               description: The UserName in Windows to
@@ -4296,9 +4338,7 @@ spec:
                                                 also be set in PodSecurityContext. If
                                                 set in both SecurityContext and PodSecurityContext,
                                                 the value specified in SecurityContext
-                                                takes precedence. This field is beta-level
-                                                and may be disabled with the WindowsRunAsUserName
-                                                feature flag.
+                                                takes precedence.
                                               type: string
                                           type: object
                                       type: object
@@ -4788,11 +4828,15 @@ spec:
                                                               optional for env vars'
                                                               type: string
                                                             divisor:
+                                                              anyOf:
+                                                                - type: integer
+                                                                - type: string
                                                               description: Specifies
                                                                 the output format of
                                                                 the exposed resources,
                                                                 defaults to "1"
-                                                              type: string
+                                                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                              x-kubernetes-int-or-string: true
                                                             resource:
                                                               description: 'Required:
                                                               resource to select'
@@ -4819,6 +4863,9 @@ spec:
                                                     or Memory. More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir'
                                                     type: string
                                                   sizeLimit:
+                                                    anyOf:
+                                                      - type: integer
+                                                      - type: string
                                                     description: 'Total amount of local
                                                     storage required for this EmptyDir
                                                     volume. The size limit is also
@@ -4831,7 +4878,8 @@ spec:
                                                     default is nil which means that
                                                     the limit is undefined. More info:
                                                     http://kubernetes.io/docs/user-guide/volumes#emptydir'
-                                                    type: string
+                                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                    x-kubernetes-int-or-string: true
                                                 type: object
                                               fc:
                                                 description: FC represents a Fibre Channel
@@ -5465,6 +5513,9 @@ spec:
                                                                         env vars'
                                                                         type: string
                                                                       divisor:
+                                                                        anyOf:
+                                                                          - type: integer
+                                                                          - type: string
                                                                         description: Specifies
                                                                           the output
                                                                           format of
@@ -5472,7 +5523,8 @@ spec:
                                                                           resources,
                                                                           defaults to
                                                                           "1"
-                                                                        type: string
+                                                                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                                        x-kubernetes-int-or-string: true
                                                                       resource:
                                                                         description: 'Required:
                                                                         resource to
@@ -6051,7 +6103,11 @@ spec:
                                   managers
                                 properties:
                                   cpu:
-                                    type: string
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
                                   memory:
                                     type: string
                                 type: object
@@ -6136,9 +6192,5 @@ spec:
           type: object
       served: true
       storage: false
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
+      subresources:
+        status: {}
