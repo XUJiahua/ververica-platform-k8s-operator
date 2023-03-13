@@ -286,7 +286,7 @@ func print(obj interface{}) {
 func (r *VpDeploymentReconciler) handleCreate(req ctrl.Request, vpDeployment v1beta2.VpDeployment) (ctrl.Result, error) {
 	log := r.getLogger(req)
 
-	print(vpDeployment)
+	//print(vpDeployment)
 
 	// See if there already exists a deployment by that name
 	namespace := utils.GetNamespaceOrDefault(vpDeployment.Spec.Metadata.Namespace)
@@ -305,7 +305,7 @@ func (r *VpDeploymentReconciler) handleCreate(req ctrl.Request, vpDeployment v1b
 
 	deployment.Metadata.Name = req.Name
 
-	print(deployment)
+	//print(deployment)
 
 	// create it
 	createdDep, err := r.AppManagerClient.
