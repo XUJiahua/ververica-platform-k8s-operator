@@ -19,8 +19,10 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/fintechstudios/ververica-platform-k8s-operator/api/v1beta2"
 	vvperrors "github.com/fintechstudios/ververica-platform-k8s-operator/pkg/vvp/errors"
+	"github.com/ghodss/yaml"
 	"strconv"
 	"time"
 
@@ -275,9 +277,16 @@ func (r *VpDeploymentReconciler) updateResource(resource *v1beta2.VpDeployment, 
 	return nil
 }
 
+func print(obj interface{}) {
+	b, _ := yaml.Marshal(obj)
+	fmt.Println(string(b))
+}
+
 // handleCreate creates VP resources
 func (r *VpDeploymentReconciler) handleCreate(req ctrl.Request, vpDeployment v1beta2.VpDeployment) (ctrl.Result, error) {
 	log := r.getLogger(req)
+
+	print(vpDeployment)
 
 	// See if there already exists a deployment by that name
 	namespace := utils.GetNamespaceOrDefault(vpDeployment.Spec.Metadata.Namespace)
@@ -295,6 +304,8 @@ func (r *VpDeploymentReconciler) handleCreate(req ctrl.Request, vpDeployment v1b
 	//}
 
 	deployment.Metadata.Name = req.Name
+
+	print(deployment)
 
 	// create it
 	createdDep, err := r.AppManagerClient.
