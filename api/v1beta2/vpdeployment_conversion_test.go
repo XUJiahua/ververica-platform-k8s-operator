@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta2
 
 import (
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fintechstudios/ververica-platform-k8s-operator/api/v1beta1"
 	"github.com/fintechstudios/ververica-platform-k8s-operator/pkg/annotations"
 	"github.com/fintechstudios/ververica-platform-k8s-operator/pkg/utils"
@@ -26,6 +27,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
+	"testing"
 	"time"
 )
 
@@ -63,7 +65,7 @@ var _ = Describe("VpDeployment conversion", func() {
 								Pods: &VpPodSpec{
 									EnvVars: []core.EnvVar{
 										{
-											Name: "TEST_ENV",
+											Name:  "TEST_ENV",
 											Value: "TEST_VALUE",
 										},
 									},
@@ -108,7 +110,7 @@ var _ = Describe("VpDeployment conversion", func() {
 								Pods: &v1beta1.VpPodSpec{
 									EnvVars: []core.EnvVar{
 										{
-											Name: "TEST_ENV",
+											Name:  "TEST_ENV",
 											Value: "TEST_VALUE",
 										},
 									},
@@ -365,3 +367,64 @@ var _ = Describe("VpDeployment conversion", func() {
 		Expect(k8sSpec.Pods.EnvVars).To(BeEquivalentTo(v2Clone.Spec.Spec.Template.Spec.Kubernetes.Pods.EnvVars))
 	})
 })
+
+type catV1 struct {
+	Name string  `json:"name"`
+	Prop *propV1 `json:"prop"`
+}
+
+type propV1 struct {
+	Name string `json:"name"`
+}
+
+type catV2 struct {
+	Name string  `json:"name"`
+	Prop *propV2 `json:"prop"`
+}
+
+type propV2 struct {
+	Name string `json:"name"`
+}
+
+func Test_convertHelper(t *testing.T) {
+	type args struct {
+		fromObj     interface{}
+		toObj       interface{}
+		expectToObj interface{}
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			args: args{
+				fromObj: catV1{
+					Name: "1",
+					Prop: &propV1{
+						Name: "1",
+					},
+				},
+				toObj: &catV2{},
+				expectToObj: &catV2{
+					Name: "1",
+					Prop: &propV2{
+						Name: "1",
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := convertHelper(tt.args.fromObj, tt.args.toObj); (err != nil) != tt.wantErr {
+				t.Errorf("convertHelper() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			spew.Dump(tt.args.toObj)
+			//if reflect.DeepEqual(tt.args.toObj, tt.args.expectToObj) {
+			//	t.Errorf("convertHelper() got = %v, want %v", tt.args.toObj, tt.args.expectToObj)
+			//}
+		})
+	}
+}

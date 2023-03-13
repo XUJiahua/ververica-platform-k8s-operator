@@ -180,41 +180,13 @@ func (src *VpDeployment) ConvertTo(dstRaw conversion.Hub) error {
 			dstTmpl.Spec.Parallelism = srcTmpl.Spec.Parallelism
 		}
 
-		if srcTmpl.Spec.Kubernetes != nil && srcTmpl.Spec.Kubernetes.Pods != nil {
-			srcPods := srcTmpl.Spec.Kubernetes.Pods
-
-			// save the labels as an annotation
-			labels, err := json.Marshal(srcPods.Labels)
+		if srcTmpl.Spec.Kubernetes != nil {
+			var kubernetesOptions v1beta1.VpKubernetesOptions
+			err := convertHelper(srcTmpl.Spec.Kubernetes, &kubernetesOptions)
 			if err != nil {
 				return err
 			}
-			annotations.Set(
-				dst.Annotations,
-				annotations.Pair(annPodLabels, string(labels)),
-			)
-
-			dstPods := &v1beta1.VpPodSpec{
-				Annotations:      srcPods.Annotations,
-				EnvVars:          srcPods.EnvVars,
-				NodeSelector:     srcPods.NodeSelector,
-				SecurityContext:  srcPods.SecurityContext,
-				ImagePullSecrets: srcPods.ImagePullSecrets,
-				Affinity:         srcPods.Affinity,
-				Tolerations:      srcPods.Tolerations,
-			}
-
-			if srcPods.VolumeMounts != nil {
-				dstPods.VolumeMounts = make([]v1beta1.VpVolumeAndMount, len(srcPods.VolumeMounts))
-				for i, e := range srcPods.VolumeMounts {
-					dstPods.VolumeMounts[i] = v1beta1.VpVolumeAndMount{
-						Name:        e.Name,
-						Volume:      e.Volume,
-						VolumeMount: e.VolumeMount,
-					}
-				}
-			}
-
-			dstTmpl.Spec.Kubernetes = &v1beta1.VpKubernetesOptions{Pods: dstPods}
+			dstTmpl.Spec.Kubernetes = &kubernetesOptions
 		}
 	}
 
@@ -223,6 +195,20 @@ func (src *VpDeployment) ConvertTo(dstRaw conversion.Hub) error {
 	// Status
 	var err error
 	if dst.Status, err = convertToDeploymentStatus(src.Status, dst.Annotations); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func convertHelper(fromObj, toObj interface{}) error {
+	data, err := json.Marshal(fromObj)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(data, toObj)
+	if err != nil {
 		return err
 	}
 
@@ -319,38 +305,13 @@ func (dst *VpDeployment) ConvertFrom(srcRaw conversion.Hub) error { // nolint:go
 		dstTmpl.Spec.Parallelism = srcTmpl.Spec.Parallelism
 	}
 
-	if srcTmpl.Spec.Kubernetes != nil && srcTmpl.Spec.Kubernetes.Pods != nil {
-		srcPods := srcTmpl.Spec.Kubernetes.Pods
-		dstPods := &VpPodSpec{
-			Annotations:      srcPods.Annotations,
-			EnvVars:          srcPods.EnvVars,
-			NodeSelector:     srcPods.NodeSelector,
-			SecurityContext:  srcPods.SecurityContext,
-			ImagePullSecrets: srcPods.ImagePullSecrets,
-			Affinity:         srcPods.Affinity,
-			Tolerations:      srcPods.Tolerations,
+	if srcTmpl.Spec.Kubernetes != nil {
+		var kubernetesOptions VpKubernetesOptions
+		err := convertHelper(srcTmpl.Spec.Kubernetes, &kubernetesOptions)
+		if err != nil {
+			return err
 		}
-		// un-bundle stored labels
-		if annotations.Has(src.Annotations, annPodLabels) {
-			data := annotations.Get(src.Annotations, annPodLabels)
-			if err := json.Unmarshal([]byte(data), &dstPods.Labels); err != nil {
-				return err
-			}
-			annotations.Remove(src.Annotations, annPodLabels)
-		}
-
-		if srcPods.VolumeMounts != nil {
-			dstPods.VolumeMounts = make([]VpVolumeAndMount, len(srcPods.VolumeMounts))
-			for i, e := range srcPods.VolumeMounts {
-				dstPods.VolumeMounts[i] = VpVolumeAndMount{
-					Name:        e.Name,
-					Volume:      e.Volume,
-					VolumeMount: e.VolumeMount,
-				}
-			}
-		}
-
-		dstTmpl.Spec.Kubernetes = &VpKubernetesOptions{Pods: dstPods}
+		dstTmpl.Spec.Kubernetes = &kubernetesOptions
 	}
 
 	dst.Spec.Spec.Template = dstTmpl

@@ -113,6 +113,9 @@ type VpPodSpec struct {
 	EnvVars []core.EnvVar `json:"envVars,omitempty" patchStrategy:"merge" patchMergeKey:"name"`
 
 	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+
+	// +optional
 	VolumeMounts []VpVolumeAndMount `json:"volumeMounts,omitempty"`
 
 	// NodeSelector is a selector which must be true for the pod to fit on a node.
@@ -142,7 +145,20 @@ type VpPodSpec struct {
 
 // VpKubernetesOptions allows users to configure K8s pods for Deployments
 type VpKubernetesOptions struct {
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// +optional
 	Pods *VpPodSpec `json:"pods,omitempty"`
+	// +optional
+	JobManagerPodTemplate *VpV1PodTemplateSpec `json:"jobManagerPodTemplate,omitempty"`
+	// +optional
+	TaskManagerPodTemplate *VpV1PodTemplateSpec `json:"taskManagerPodTemplate,omitempty"`
+}
+
+// PodTemplateSpec describes the data a pod should have when created from a template
+type VpV1PodTemplateSpec struct {
+	Metadata *metav1.ObjectMeta `json:"metadata,omitempty"`
+	Spec     *core.PodSpec      `json:"spec,omitempty"`
 }
 
 // VpDeploymentTemplateSpec is the base spec for Deployment jobs
