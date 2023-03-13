@@ -287,10 +287,12 @@ func (r *VpDeploymentReconciler) handleCreate(req ctrl.Request, vpDeployment v1b
 		return ctrl.Result{}, err
 	}
 
-	deployment.Spec.DeploymentTargetId, err = r.getDeploymentTargetID(context.Background(), vpDeployment)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
+	// vvp 2.6: exactly one of spec.deploymentTargetId, spec.deploymentTargetName and spec.sessionClusterName must be specified
+	// fix: just remove
+	//deployment.Spec.DeploymentTargetId, err = r.getDeploymentTargetID(context.Background(), vpDeployment)
+	//if err != nil {
+	//	return ctrl.Result{}, err
+	//}
 
 	deployment.Metadata.Name = req.Name
 
