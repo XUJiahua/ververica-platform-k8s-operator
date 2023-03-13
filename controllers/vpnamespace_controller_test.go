@@ -77,7 +77,7 @@ var _ = Describe("VpNamespace Controller", func() {
 		It("should update a k8s vp namespace with a Platform namespace", func() {
 			phase := "LIFECYCLE_PHASE_ACTIVE"
 			namespace := &platformapi.Namespace{
-				CreateTime:     timeMustParse(time.RFC3339, "2019-10-18T14:27:58.328Z"),
+				CreateTime:     *timeMustParse(time.RFC3339, "2019-10-18T14:27:58.328Z"),
 				LifecyclePhase: phase,
 				Name:           "foo",
 				RoleBindings: []platformapi.RoleBinding{
