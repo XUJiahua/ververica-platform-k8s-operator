@@ -50,10 +50,10 @@ imagePullPolicy: IfNotPresent
 resources:
   limits:
     cpu: 100m
-    memory: 30Mi
+    memory: 300Mi
   requests:
     cpu: 100m
-    memory: 20Mi
+    memory: 200Mi
 
 # Liveness Probe (metrics endpoint can be used for that)
 livenessProbe: {}
