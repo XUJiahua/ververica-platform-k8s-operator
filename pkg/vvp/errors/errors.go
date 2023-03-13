@@ -24,22 +24,38 @@ var (
 	ErrAuthContext = errors.New("couldn't get authorized context")
 )
 
+type errBody struct {
+	Kind       string `json:"kind"`
+	ApiVersion string `json:"apiVersion"`
+	Message    string `json:"message"`
+	Reason     string `json:"reason"`
+	Errors     []struct {
+		Attribute string `json:"attribute"`
+		Message   string `json:"message"`
+		Reason    string `json:"reason"`
+	} `json:"errors"`
+	StatusCode int `json:"statusCode"`
+}
+
+func (b errBody) ErrString() string {
+	return fmt.Sprintf("%v: %v, %v", b.Reason, b.Message, b.Errors)
+}
+
 func bodyMessage(err error, body []byte) string {
 	if body == nil {
 		return err.Error()
 	}
 
-	var i interface{}
+	var i errBody
 	if jsonErr := json.Unmarshal(body, &i); jsonErr != nil {
 		return err.Error()
 	}
-	m := i.(map[string]interface{})
 
-	if m["message"] == nil {
+	if i.Message == "" {
 		return err.Error()
 	}
 
-	return m["message"].(string)
+	return i.ErrString()
 }
 
 // getClientErrorMessage deconstructs errors coming from the Platform or AppManger APIs
