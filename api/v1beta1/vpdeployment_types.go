@@ -69,6 +69,10 @@ type VpArtifact struct {
 	FlinkImageRepository string `json:"flinkImageRepository,omitempty"`
 	// +optional
 	FlinkImageTag string `json:"flinkImageTag,omitempty"`
+	// +optional
+	AdditionalDependencies []string `json:"additionalDependencies,omitempty"`
+	// +optional
+	SqlScript string `json:"sqlScript,omitempty"`
 }
 
 // VpResourceSpec represents the resource requirements for components like the job and task managers
@@ -83,7 +87,11 @@ type VpResourceSpec struct {
 // VpLogging configures various loggers
 type VpLogging struct {
 	// +optional
+	LoggingProfile string `json:"loggingProfile,omitempty"`
+	// +optional
 	Log4jLoggers map[string]string `json:"log4jLoggers,omitempty"`
+	// +optional
+	Log4j2ConfigurationTemplate string `json:"log4j2ConfigurationTemplate,omitempty"`
 }
 
 // VpVolumeAndMount is a wrapper around both core.Volume and core.VolumeMount

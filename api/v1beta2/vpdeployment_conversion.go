@@ -138,14 +138,16 @@ func (src *VpDeployment) ConvertTo(dstRaw conversion.Hub) error {
 	if srcTmpl.Spec != nil {
 		if srcTmpl.Spec.Artifact != nil {
 			dstTmpl.Spec.Artifact = &v1beta1.VpArtifact{
-				Kind:                 srcTmpl.Spec.Artifact.Kind,
-				JarURI:               srcTmpl.Spec.Artifact.JarURI,
-				MainArgs:             srcTmpl.Spec.Artifact.MainArgs,
-				EntryClass:           srcTmpl.Spec.Artifact.EntryClass,
-				FlinkVersion:         srcTmpl.Spec.Artifact.FlinkVersion,
-				FlinkImageRegistry:   srcTmpl.Spec.Artifact.FlinkImageRegistry,
-				FlinkImageRepository: srcTmpl.Spec.Artifact.FlinkImageRepository,
-				FlinkImageTag:        srcTmpl.Spec.Artifact.FlinkImageTag,
+				Kind:                   srcTmpl.Spec.Artifact.Kind,
+				JarURI:                 srcTmpl.Spec.Artifact.JarURI,
+				SqlScript:              srcTmpl.Spec.Artifact.SqlScript,
+				AdditionalDependencies: srcTmpl.Spec.Artifact.AdditionalDependencies,
+				MainArgs:               srcTmpl.Spec.Artifact.MainArgs,
+				EntryClass:             srcTmpl.Spec.Artifact.EntryClass,
+				FlinkVersion:           srcTmpl.Spec.Artifact.FlinkVersion,
+				FlinkImageRegistry:     srcTmpl.Spec.Artifact.FlinkImageRegistry,
+				FlinkImageRepository:   srcTmpl.Spec.Artifact.FlinkImageRepository,
+				FlinkImageTag:          srcTmpl.Spec.Artifact.FlinkImageTag,
 			}
 		}
 
@@ -163,7 +165,11 @@ func (src *VpDeployment) ConvertTo(dstRaw conversion.Hub) error {
 		}
 
 		if srcTmpl.Spec.Logging != nil {
-			dstTmpl.Spec.Logging = &v1beta1.VpLogging{Log4jLoggers: srcTmpl.Spec.Logging.Log4jLoggers}
+			dstTmpl.Spec.Logging = &v1beta1.VpLogging{
+				LoggingProfile:              srcTmpl.Spec.Logging.LoggingProfile,
+				Log4jLoggers:                srcTmpl.Spec.Logging.Log4jLoggers,
+				Log4j2ConfigurationTemplate: srcTmpl.Spec.Logging.Log4j2ConfigurationTemplate,
+			}
 		}
 
 		if srcTmpl.Spec.NumberOfTaskManagers != nil {
@@ -298,7 +304,11 @@ func (dst *VpDeployment) ConvertFrom(srcRaw conversion.Hub) error { // nolint:go
 	}
 
 	if srcTmpl.Spec.Logging != nil {
-		dstTmpl.Spec.Logging = &VpLogging{Log4jLoggers: srcTmpl.Spec.Logging.Log4jLoggers}
+		dstTmpl.Spec.Logging = &VpLogging{
+			LoggingProfile:              srcTmpl.Spec.Logging.LoggingProfile,
+			Log4jLoggers:                srcTmpl.Spec.Logging.Log4jLoggers,
+			Log4j2ConfigurationTemplate: srcTmpl.Spec.Logging.Log4j2ConfigurationTemplate,
+		}
 	}
 
 	if srcTmpl.Spec.NumberOfTaskManagers != nil {
