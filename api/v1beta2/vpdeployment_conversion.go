@@ -266,14 +266,16 @@ func (dst *VpDeployment) ConvertFrom(srcRaw conversion.Hub) error { // nolint:go
 	}
 
 	dstTmpl.Spec.Artifact = &VpArtifact{
-		Kind:                 srcTmpl.Spec.Artifact.Kind,
-		JarURI:               srcTmpl.Spec.Artifact.JarURI,
-		MainArgs:             srcTmpl.Spec.Artifact.MainArgs,
-		EntryClass:           srcTmpl.Spec.Artifact.EntryClass,
-		FlinkVersion:         srcTmpl.Spec.Artifact.FlinkVersion,
-		FlinkImageRegistry:   srcTmpl.Spec.Artifact.FlinkImageRegistry,
-		FlinkImageRepository: srcTmpl.Spec.Artifact.FlinkImageRepository,
-		FlinkImageTag:        srcTmpl.Spec.Artifact.FlinkImageTag,
+		Kind:                   srcTmpl.Spec.Artifact.Kind,
+		JarURI:                 srcTmpl.Spec.Artifact.JarURI,
+		MainArgs:               srcTmpl.Spec.Artifact.MainArgs,
+		EntryClass:             srcTmpl.Spec.Artifact.EntryClass,
+		FlinkVersion:           srcTmpl.Spec.Artifact.FlinkVersion,
+		FlinkImageRegistry:     srcTmpl.Spec.Artifact.FlinkImageRegistry,
+		FlinkImageRepository:   srcTmpl.Spec.Artifact.FlinkImageRepository,
+		FlinkImageTag:          srcTmpl.Spec.Artifact.FlinkImageTag,
+		AdditionalDependencies: srcTmpl.Spec.Artifact.AdditionalDependencies,
+		SqlScript:              srcTmpl.Spec.Artifact.SqlScript,
 	}
 
 	dstTmpl.Spec.FlinkConfiguration = srcTmpl.Spec.FlinkConfiguration
